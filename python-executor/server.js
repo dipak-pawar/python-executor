@@ -17,7 +17,7 @@ app.get('/statusz', (request, response) => response.send('I am ready'));
 
 // Create new Alert
 app.post('/alert', function (req, res) {
-    console.log(req.body)
+    // console.log(req.body)
     
     var spawn = require("child_process").spawn;
      
@@ -27,25 +27,20 @@ app.post('/alert', function (req, res) {
     //    and arguments for the script 
      
     // e.g. : http://localhost:3000/alerts
-    var scriptExecution = spawn('/usr/bin/python',["./../scripts/hello.py",
+    var scriptExecution = spawn('python',["./../scripts/hello.py",
                             JSON.stringify(req.body)] );
 
  
     // Takes stdout data from script which executed
     // with arguments and send this data to res object
     scriptExecution.stdout.on('data', function(data) {
-        res.send(data);
+        res.status(200).send(data)
     } )
 
     // Handle error output
     scriptExecution.stderr.on('data', (data) => {
         console.log(data);
-        res.send("failed to execute python script", data);
-    });
-
-    scriptExecution.on('exit', (code) => {
-        console.log("Process quit with code : " + code);
-        res.send("python execution exited with code: " + code);
+        res.status(500).send(data);
     });
 });
 
